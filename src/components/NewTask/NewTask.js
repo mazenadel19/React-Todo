@@ -7,10 +7,6 @@ const NewTask = props => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState(null)
 
-
-	
-
-
 	const enterTaskHandler = async taskText => {
 		setIsLoading(true)
 		setError(null)

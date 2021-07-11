@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Tasks from './components/Tasks/Tasks'
 import NewTask from './components/NewTask/NewTask'
@@ -6,35 +6,26 @@ import useHttp from './hooks/use-http'
 
 function App() {
 	const [tasks, setTasks] = useState([])
-
-	const transformedData = useCallback(tasksObj => {
-		const loadedTasks = []
-
-		for (const taskKey in tasksObj) {
-			loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text })
-		}
-
-		setTasks(loadedTasks)
-	}, [])
-
-	const reqConfig = useMemo(() => {
-		return {
-			url: 'https://react-dummy-movies-bf735-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
-		}
-	}, [])
-
-	const {
-		isLoading,
-		error,
-		sendReqest: fetchTasks,
-	} = useHttp(reqConfig, transformedData)
-
-	console.log('loop')
+	const { isLoading, error, sendReqest: fetchTasks } = useHttp()
 
 	useEffect(() => {
-		fetchTasks()
+		const transformedData = tasksObj => {
+			const loadedTasks = []
+
+			for (const taskKey in tasksObj) {
+				loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text })
+			}
+
+			setTasks(loadedTasks)
+		}
+
+		fetchTasks(
+			{
+				url: 'https://react-dummy-movies-bf735-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
+			},
+			transformedData,
+		)
 	}, [fetchTasks])
-	// }, [])
 
 	const taskAddHandler = task => {
 		setTasks(prevTasks => prevTasks.concat(task))
