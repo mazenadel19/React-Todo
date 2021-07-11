@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Tasks from './components/Tasks/Tasks'
 import NewTask from './components/NewTask/NewTask'
 import useHttp from './hooks/use-http'
 
-const reqConfig = {
-	url: 'https://react-dummy-movies-bf735-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
-}
-
 function App() {
 	const [tasks, setTasks] = useState([])
 
-	const transformedData = tasksObj => {
+	const transformedData = useCallback(tasksObj => {
 		const loadedTasks = []
 
 		for (const taskKey in tasksObj) {
@@ -19,7 +15,13 @@ function App() {
 		}
 
 		setTasks(loadedTasks)
-	}
+	}, [])
+
+	const reqConfig = useMemo(() => {
+		return {
+			url: 'https://react-dummy-movies-bf735-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
+		}
+	}, [])
 
 	const {
 		isLoading,
@@ -27,9 +29,12 @@ function App() {
 		sendReqest: fetchTasks,
 	} = useHttp(reqConfig, transformedData)
 
+	console.log('loop')
+
 	useEffect(() => {
 		fetchTasks()
-	}, [])
+	}, [fetchTasks])
+	// }, [])
 
 	const taskAddHandler = task => {
 		setTasks(prevTasks => prevTasks.concat(task))
